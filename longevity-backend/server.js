@@ -50,6 +50,22 @@ app.get('/health', async (req, res) => {
 
 // List leads (with simple filtering)
 app.get('/api/leads', async (req, res, next) => {
+// Create new lead
+app.post('/api/leads', async (req, res, next) => {
+  try {
+    const { name, phone, email } = req.body;
+
+    const result = await pool.query(
+      'INSERT INTO leads (name, phone, email) VALUES ($1, $2, $3) RETURNING *',
+      [name, phone, email]
+    );
+
+    res.json({ lead: result.rows[0] });
+  } catch (err) {
+    next(err);
+  }
+});
+  
   try {
     const { stage, q } = req.query;
     const params = [];
